@@ -10,9 +10,61 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_18_195709) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_19_001258) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "battle_cards", force: :cascade do |t|
+    t.datetime "played_at"
+    t.boolean "dead", default: false
+    t.bigint "player_id", null: false
+    t.bigint "battle_id", null: false
+    t.bigint "card_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["battle_id"], name: "index_battle_cards_on_battle_id"
+    t.index ["card_id"], name: "index_battle_cards_on_card_id"
+    t.index ["player_id"], name: "index_battle_cards_on_player_id"
+  end
+
+  create_table "battles", force: :cascade do |t|
+    t.string "result"
+    t.bigint "player_a_id", null: false
+    t.bigint "player_b_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["player_a_id"], name: "index_battles_on_player_a_id"
+    t.index ["player_b_id"], name: "index_battles_on_player_b_id"
+  end
+
+  create_table "cards", force: :cascade do |t|
+    t.string "name"
+    t.string "card_type"
+    t.integer "hit_points"
+    t.integer "armor"
+    t.integer "power"
+    t.integer "speed"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "players", force: :cascade do |t|
+    t.string "name"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_players_on_user_id"
+  end
+
+  create_table "skills", force: :cascade do |t|
+    t.string "name"
+    t.string "skill_type"
+    t.string "effect"
+    t.bigint "card_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["card_id"], name: "index_skills_on_card_id"
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -26,4 +78,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_18_195709) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "battle_cards", "battles"
+  add_foreign_key "battle_cards", "cards"
+  add_foreign_key "battle_cards", "players"
+  add_foreign_key "battles", "players", column: "player_a_id"
+  add_foreign_key "battles", "players", column: "player_b_id"
+  add_foreign_key "players", "users"
+  add_foreign_key "skills", "cards"
 end
