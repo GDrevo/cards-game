@@ -1,0 +1,12 @@
+<div class="my-container">
+  <div class="new-battle-container">
+    <h1>Start a battle against a random player now!</h1>
+    <h3>Pick a side:</h3>
+    <%= button_to battles_path(side: "light"), method: :post do %>
+      <h5>Light Side</h5>
+    <% end %>
+    <%= button_to battles_path(side: "dark"), method: :post do %>
+      <h5>Dark Side</h5>
+    <% end %>
+  </div>
+</div>
