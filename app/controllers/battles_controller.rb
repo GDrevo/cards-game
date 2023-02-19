@@ -40,9 +40,23 @@ class BattlesController < ApplicationController
 
   def show
     @battle = Battle.find(params[:id])
+    cards_player = @battle.player_a.battle_cards
+    cards_opponent = @battle.player_b.battle_cards
+    while !cards_player.all?(&:dead) || !cards_opponent.all?(&:dead)
+      play_turn(@battle.id)
+    end
+    raise
+    # TO DO: Set the game over rules
   end
 
   private
+
+  def play_turn(battle_id)
+    # TO DO: Create the turn based logic using cards.speed and battle_card.played_at
+    battle = Battle.find(battle_id)
+    all_cards = battle.cards
+    raise
+  end
 
   def battle_params
     params.permit!
