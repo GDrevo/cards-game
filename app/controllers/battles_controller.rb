@@ -5,34 +5,40 @@ class BattlesController < ApplicationController
 
   def create
     Player.create(name: "Player 1", user: current_user) unless current_user.player
-    @battle = Battle.new(player_a: current_user.player, player_b: Player.all.sample)
+    @battle = Battle.create(player_a: current_user.player, player_b: Player.all.sample)
     # Pick 5 random cards for player_a and player_b depending on the choice made by user
     players_deck = []
     opponents_deck = []
+    light_cards = Card.where(card_type: "light")
+    dark_cards = Card.where(card_type: "dark")
     if battle_params[:side] == "light"
-      while players_deck.length < 5
-        card = Card.where(card_type: "light").sample
-        new_card = BattleCard.create(player: @battle.player_a, battle: @battle, card:)
-        players_deck << new_card unless players_deck.include?(new_card)
+      while players_deck.size < 5
+        card = light_cards.sample
+        battle_card = BattleCard.new(player: @battle.player_a, battle: @battle, card:)
+        battle_card.save unless players_deck.any? { |bc| bc.card.id == battle_card.card.id }
+        players_deck << battle_card unless players_deck.any? { |bc| bc.card.id == battle_card.card.id }
       end
-      while opponents_deck.length < 5
-        card = Card.where(card_type: "dark").sample
-        new_card = BattleCard.create(player: @battle.player_b, battle: @battle, card:)
-        opponents_deck << new_card unless opponents_deck.include?(new_card)
+      while opponents_deck.size < 5
+        card = dark_cards.sample
+        battle_card = BattleCard.new(player: @battle.player_b, battle: @battle, card:)
+        battle_card.save unless opponents_deck.any? { |bc| bc.card.id == battle_card.card.id }
+        opponents_deck << battle_card unless opponents_deck.any? { |bc| bc.card.id == battle_card.card.id }
       end
+
     else
-      while players_deck.length < 5
-        card = Card.where(card_type: "dark").sample
-        new_card = BattleCard.create(player: @battle.player_a, battle: @battle, card:)
-        players_deck << new_card unless players_deck.include?(new_card)
+      while players_deck.size < 5
+        card = dark_cards.sample
+        battle_card = BattleCard.new(player: @battle.player_a, battle: @battle, card:)
+        battle_card.save unless players_deck.any? { |bc| bc.card.id == battle_card.card.id }
+        players_deck << battle_card unless players_deck.any? { |bc| bc.card.id == battle_card.card.id }
       end
-      while opponents_deck.length < 5
-        card = Card.where(card_type: "light").sample
-        new_card = BattleCard.create(player: @battle.player_b, battle: @battle, card:)
-        opponents_deck << new_card unless opponents_deck.include?(new_card)
+      while opponents_deck.size < 5
+        card = light_cards.sample
+        battle_card = BattleCard.new(player: @battle.player_b, battle: @battle, card:)
+        battle_card.save unless opponents_deck.any? { |bc| bc.card.id == battle_card.card.id }
+        opponents_deck << battle_card unless opponents_deck.any? { |bc| bc.card.id == battle_card.card.id }
       end
     end
-
     redirect_to battle_path(@battle)
   end
 
@@ -73,6 +79,14 @@ class BattlesController < ApplicationController
     card_to_play.counter = 0
     card_to_play.save
     session.delete(:card_to_play_id)
+    redirect_to battle_path(battle)
+  end
+
+  def simulate_turn
+    # 1. Get the skills the card_to_play can use, compute a simple logic to decide which to use
+    # 2. Do the same for the opponent's card to target
+    # 3. Calculate damage, lower hit_points and reset counter
+    raise
     redirect_to battle_path(battle)
   end
 

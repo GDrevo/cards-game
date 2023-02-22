@@ -33,25 +33,30 @@
   </div>
 <% else %>
   <div class="container">
-  <h1>This is the game</h1>
-  <% @cards_player.each do |card| %>
-    <div class="player-card">
-      <h5><%= card.card.name %></h5>
-    </div>
-  <% end %>
-  <br>
-  <br>
-
-  <h2>Card playing: <%= @card_to_play.card.name %></h2>
-
-  <br>
-  <br>
-
+  <h2>This is the opponent's part</h2>
     <% @cards_opponent.each do |card| %>
       <div class="player-card">
         <h5><%= card.card.name %></h5>
       </div>
     <% end %>
+  <br>
+  <br>
+
+  <h2>Card playing: <%= @card_to_play.card.name %></h2>
+
+  <%= form_with(url: simulate_turn_battle_path, method: :patch) do |f| %>
+    <%= f.submit "Next" %>
+  <% end %>
+
+  <br>
+  <br>
+
+  <h2>This is the player's part</h2>
+  <% @cards_player.each do |card| %>
+    <div class="player-card">
+      <h5><%= card.card.name %></h5>
+    </div>
+  <% end %>
 
   </div>
 <% end %>
