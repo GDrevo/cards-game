@@ -41,12 +41,8 @@ class BattlesController < ApplicationController
     @cards_player = @battle.player_a.battle_cards.where(battle: @battle)
     @cards_opponent = @battle.player_b.battle_cards.where(battle: @battle)
     if !@cards_player.all?(&:dead) && !@cards_opponent.all?(&:dead)
-      # card_played = play_turn(@battle.id, cards_player, cards_opponent)
-      # break unless card_played[0]
-
-      # @card = card_played[1]
-      # return
       @card_to_play = play_turn(@battle.id, @cards_player, @cards_opponent)
+      @skills = @card_to_play.card.skills
     end
 
     if @cards_player.all?(&:dead)
@@ -58,43 +54,42 @@ class BattlesController < ApplicationController
     end
   end
 
+  def play_card
+    battle = Battle.find(params[:id])
+    player_cards = battle.player_a.battle_cards.where(battle: battle)
+    opponents_cards = battle.player_b.battle_cards.where(battle: battle)
+    all_cards = player_cards + opponents_cards
+    skill_id = params[:skill]
+    skill = Skill.find(skill_id)
+    attacker = skill.card
+    attackers_battle_card = (battle.player_a.battle_cards.where(card: attacker, battle: battle) + battle.player_b.battle_cards.where(card: attacker, battle: battle)).first
+    raise
+    target = choose_target(skill)
+    # Once the target is chosen, calculate hit_points loss for target depending on attacker.power, and target.armor.
+    # Reduce target.hit_points and set target's battle_card.dead = true when target.hit_points <= 0
+    # Reset attacker's battle_card.counter = 0
+    # re render show method
+  end
+
   private
 
   def play_turn(battle_id, cards_player, cards_opponent)
     # TO DO: Create the turn based logic using cards.speed and battle_card.played_at
     battle = Battle.find(battle_id)
     all_cards = cards_player + cards_opponent
-    all_cards.sort_by! { |battle_card| battle_card.card.speed }
-    all_cards.reverse!
     all_cards.each do |battle_card|
-      battle_card.counter = battle_card.card.speed
+      battle_card.counter.nil? ? battle_card.counter = battle_card.card.speed : nil
+      battle_card.save
     end
+    all_cards.sort_by! { |battle_card| battle_card.counter }
+    all_cards.reverse!
     while all_cards.all? { |battle_card| battle_card.counter < 100 }
       all_cards.each do |battle_card|
         battle_card.counter += battle_card.card.speed
+        battle_card.save
       end
     end
     all_cards.find { |battle_card| battle_card.counter > 100 }
-  end
-
-  def play_card(battle_card)
-    @available_skills = battle_card.card.skills
-    raise
-    # battle_card = BattleCard.find_by(id: session[:card_to_play_id])
-    # redirect_to battle_path(battle_card.battle) unless battle_card.present?
-
-    # skill = Skill.find_by(id: params[:selected_skill_id])
-    # return redirect_to battle_path(battle_card.battle) unless skill.present? && battle_card.card.skills.include?(skill)
-
-    # battle_card.perform_skill(skill)
-    # session.delete(:card_to_play_id)
-    # redirect_to battle_path(battle_card.battle)
-  end
-
-  def choose_skill(card)
-    selected_skill_id = params[:skill] if params[:skill]
-    # selected_skill = card.skills.find(selected_skill_id)
-    raise
   end
 
   def battle_params
