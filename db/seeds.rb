@@ -1,5 +1,7 @@
 require 'faker'
 
+Skill.destroy_all
+BattleCard.destroy_all
 Card.destroy_all
 
 # TO DO: Create 10 "good" and 10 "evil" cards

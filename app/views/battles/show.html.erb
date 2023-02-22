@@ -1,0 +1,63 @@
+<% if @card_to_play.player == current_user.player %>
+  <div class="container">
+    <h2>This is the opponent's part</h2>
+    <% @cards_opponent.each do |card| %>
+      <div class="player-card">
+        <h5><%= card.card.name %></h5>
+      </div>
+    <% end %>
+
+    <br>
+    <br>
+
+    <h2>This is the player's part</h2>
+    <% @cards_player.each do |card| %>
+      <div class="player-card">
+        <h5><%= card.card.name %></h5>
+      </div>
+    <% end %>
+    <h3>Card playing: <%= @card_to_play.card.name %></h3>
+
+    <% @skills.each do |skill| %>
+      <%= form_with(url: play_card_battle_path, method: :patch) do |f| %>
+        <% if skill.effect.include?("Single") %>
+          <%= f.radio_button :target, @cards_opponent[0] %>
+          <%= f.label @cards_opponent[0].card.name %>
+          <%= f.radio_button :target, @cards_opponent[1] %>
+          <%= f.label @cards_opponent[1].card.name %>
+          <%= f.radio_button :target, @cards_opponent[2] %>
+          <%= f.label @cards_opponent[2].card.name %>
+          <%= f.radio_button :target, @cards_opponent[3] %>
+          <%= f.label @cards_opponent[3].card.name %>
+          <%= f.radio_button :target, @cards_opponent[4] %>
+          <%= f.label @cards_opponent[4].card.name %>
+        <% end %>
+        <%= f.hidden_field :skill, value: skill.id %>
+        <%= f.submit skill.id, value: skill.name %>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <div class="container">
+  <h1>This is the game</h1>
+  <% @cards_player.each do |card| %>
+    <div class="player-card">
+      <h5><%= card.card.name %></h5>
+    </div>
+  <% end %>
+  <br>
+  <br>
+
+  <h2>Card playing: <%= @card_to_play.card.name %></h2>
+
+  <br>
+  <br>
+
+    <% @cards_opponent.each do |card| %>
+      <div class="player-card">
+        <h5><%= card.card.name %></h5>
+      </div>
+    <% end %>
+
+  </div>
+<% end %>

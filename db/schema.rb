@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_19_001258) do
+ActiveRecord::Schema[7.0].define(version: 2023_02_22_120255) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -22,6 +22,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_19_001258) do
     t.bigint "card_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "counter"
     t.index ["battle_id"], name: "index_battle_cards_on_battle_id"
     t.index ["card_id"], name: "index_battle_cards_on_card_id"
     t.index ["player_id"], name: "index_battle_cards_on_player_id"
