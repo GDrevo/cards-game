@@ -13,12 +13,15 @@ class BattlesController < ApplicationController
       while players_deck.length < 5
         card = Card.where(card_type: "light").sample
         new_card = BattleCard.create(player: @battle.player_a, battle: @battle, card:)
-        players_deck << new_card unless players_deck.include?(new_card)
+        players_deck.all? { |card| card.id != new_card.id } ? players_deck << new_card : next
+
+        # players_deck << new_card unless players_deck.include?(new_card)
       end
       while opponents_deck.length < 5
         card = Card.where(card_type: "dark").sample
         new_card = BattleCard.create(player: @battle.player_b, battle: @battle, card:)
-        opponents_deck << new_card unless opponents_deck.include?(new_card)
+        opponents_deck.all? { |card| card.id != new_card.id } ? opponents_deck << new_card : next
+        # opponents_deck << new_card unless opponents_deck.include?(new_card)
       end
     else
       while players_deck.length < 5
