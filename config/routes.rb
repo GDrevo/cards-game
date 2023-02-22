@@ -8,5 +8,6 @@ Rails.application.routes.draw do
   resources :players, only: %i[new create]
   resources :battles, only: %i[new create show] do
     patch :play_card, on: :member
+    patch :simulate_turn, on: :member
   end
 end
