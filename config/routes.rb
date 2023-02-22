@@ -6,5 +6,8 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "articles#index"
   resources :players, only: %i[new create]
-  resources :battles, only: %i[new create show]
+  resources :battles, only: %i[new create show] do
+    get 'choose_skill', on: :member
+    post 'play_card', on: :member
+  end
 end

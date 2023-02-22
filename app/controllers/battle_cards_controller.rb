@@ -1,0 +1,2 @@
+class BattleCardsController < ApplicationController
+end
