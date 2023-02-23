@@ -44,8 +44,10 @@ class BattlesController < ApplicationController
 
   def show
     @battle = Battle.find(params[:id].to_i)
-    @cards_player = @battle.player_a.battle_cards.where(battle: @battle).and(@battle.player_a.battle_cards.where(dead: false))
-    @cards_opponent = @battle.player_b.battle_cards.where(battle: @battle).and(@battle.player_b.battle_cards.where(dead: false))
+    cards_player = @battle.player_a.battle_cards.where(battle: @battle).and(@battle.player_a.battle_cards.where(dead: false))
+    @cards_player = cards_player.sort_by { |obj| obj.card.name }
+    cards_opponent = @battle.player_b.battle_cards.where(battle: @battle).and(@battle.player_b.battle_cards.where(dead: false))
+    @cards_opponent = cards_opponent.sort_by { |obj| obj.card.name }
     if !@cards_player.all?(&:dead) && !@cards_opponent.all?(&:dead)
       @card_to_play = play_turn(@cards_player, @cards_opponent)
       session[:card_to_play_id] = @card_to_play.id
@@ -116,24 +118,32 @@ class BattlesController < ApplicationController
   private
 
   def decision_skill(card, players_deck, computers_deck)
-    # TO DO !!!!!!
-    # 1. check number of living allies and ennemies
-    # 2. check number of injured allies and ennemies
-    # 3. if half of the allies are injured, trigger a heal if possible
-    #    if not trigger an attack
-    # 4. if heal, check if more than 1 ally injured, if so trigger multi
-    #    if not trigger single
-    # 5. if attack, check if more than 1 ennemy alive, if so trigger multi
-    #    if not trigger single
-    card.card.skills.sample
+    skills = card.card.skills
+    heals = card.card.skills.select { |skill| skill.skill_type == "Heal" }
+    attacks = card.card.skills.select { |skill| skill.skill_type == "Attack" }
+    allies_alive = computers_deck.size
+    ennemies_alive = players_deck.size
+    allies_injured = (computers_deck.select { |battle_card| battle_card.hit_points.between?(1, 80) }).size
+    ennemies_injured = (players_deck.select { |battle_card| battle_card.hit_points.between?(1, 80) }).size
+    if (allies_alive.to_f / allies_injured) < 2
+      if allies_injured.size > 1
+        skill = (heals.select { |heal| heal.effect.include?("Multi") }).first
+      end
+      skill ||= (heals.select { |heal| heal.effect.include?("Single") }).first
+    else
+      if ennemies_alive.size > 1
+        skill = (attacks.select { |attack| attack.effect.include?("Multi") }).first
+      end
+      skill ||= (attacks.select { |attack| attack.effect.include?("Single") }).first
+    end
+    skill.nil? ? skills.sample : skill
   end
 
   def decision_target(players_deck, computers_deck, skill)
-    # TO DO !!!!!!
     if skill.skill_type == "Heal"
-      computers_deck.sample
+      computers_deck.min_by(&:hit_points)
     elsif skill.skill_type == "Attack"
-      players_deck.sample
+      players_deck.min_by(&:hit_points)
     end
   end
 
