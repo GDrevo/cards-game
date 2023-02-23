@@ -54,13 +54,18 @@ class BattlesController < ApplicationController
       @skills = @card_to_play.card.skills
     end
 
-    if @cards_player.all?(&:dead)
-      redirect_to game_over_path(@battle, winner: @battle.player_b)
-    elsif @cards_opponent.all?(&:dead)
-      redirect_to game_over_path(@battle, winner: @battle.player_a)
+    if @cards_player.empty?
+      redirect_to battle_game_over_path(@battle, result: @battle.player_b)
+    elsif @cards_opponent.empty?
+      redirect_to battle_game_over_path(@battle, result: @battle.player_a)
     else
       render :show
     end
+  end
+
+  def game_over
+    @battle = Battle.find(params[:battle_id])
+    @winner = Player.find(params[:result])
   end
 
   def play_card

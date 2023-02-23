@@ -1,0 +1,9 @@
+<% if @winner == current_user.player %>
+  <h1>Congratulations, you win!</h1>
+<% else %>
+  <h1>Too bad... you loose.</h1>
+<% end %>
+
+<%= link_to new_battle_path do %>
+  <h3>New Game</h3>
+<% end %>

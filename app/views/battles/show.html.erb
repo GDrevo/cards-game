@@ -6,13 +6,11 @@
         <% @cards_opponent.each do |card| %>
           <div class="player-card">
             <h5><%= card.card.name %></h5>
-            <p><%= card.hit_points.nil? ? 100 : card.hit_points %> / 100 life</p>
             <% if card.hit_points > 30 %>
               <div class="card-hit-points" style="width: <%= card.hit_points %>%;"></div>
             <% else %>
               <div class="card-hit-points-low" style="width: <%= card.hit_points %>%;"></div>
             <% end %>
-            <p><%= card.counter > 100 ? 100 : card.counter %> / 100 counter</p>
             <div class="card-counter" style="width: <%= card.counter %>%;"></div>
           </div>
         <% end %>
@@ -28,13 +26,11 @@
         <% @cards_player.each do |card| %>
           <div class="player-card">
             <h5><%= card.card.name %></h5>
-            <p><%= card.hit_points.nil? ? 100 : card.hit_points %> / 100 life</p>
             <% if card.hit_points > 30 %>
               <div class="card-hit-points" style="width: <%= card.hit_points %>%;"></div>
             <% else %>
               <div class="card-hit-points-low" style="width: <%= card.hit_points %>%;"></div>
             <% end %>
-            <p><%= card.counter > 100 ? 100 : card.counter %> / 100 counter</p>
             <div class="card-counter" style="width: <%= card.counter %>%;"></div>
           </div>
         <% end %>
@@ -77,13 +73,11 @@
         <% @cards_opponent.each do |card| %>
           <div class="player-card">
             <h5><%= card.card.name %></h5>
-            <p><%= card.hit_points.nil? ? 100 : card.hit_points %> / 100 life</p>
             <% if card.hit_points > 30 %>
               <div class="card-hit-points" style="width: <%= card.hit_points %>%;"></div>
             <% else %>
               <div class="card-hit-points-low" style="width: <%= card.hit_points %>%;"></div>
             <% end %>
-            <p><%= card.counter > 100 ? 100 : card.counter %> / 100 counter</p>
             <div class="card-counter" style="width: <%= card.counter %>%;"></div>
           </div>
         <% end %>
@@ -111,13 +105,11 @@
           <div class="player-card">
 
             <h5><%= card.card.name %></h5>
-            <p><%= card.hit_points.nil? ? 100 : card.hit_points %> / 100 life</p>
             <% if card.hit_points > 40 %>
               <div class="card-hit-points" style="width: <%= card.hit_points %>%;"></div>
             <% else %>
               <div class="card-hit-points-low" style="width: <%= card.hit_points %>%;"></div>
             <% end %>
-            <p><%= card.counter > 100 ? 100 : card.counter %> / 100 counter</p>
             <div class="card-counter" style="width: <%= card.counter %>%;"></div>
           </div>
         <% end %>

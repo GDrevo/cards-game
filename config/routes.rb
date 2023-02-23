@@ -9,5 +9,6 @@ Rails.application.routes.draw do
   resources :battles, only: %i[new create show] do
     patch :play_card, on: :member
     patch :simulate_turn, on: :member
+    get 'game_over/:result', to: 'battles#game_over', as: 'game_over'
   end
 end
