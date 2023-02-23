@@ -53,9 +53,9 @@ class BattlesController < ApplicationController
     end
 
     if @cards_player.all?(&:dead)
-      redirect_to game_over_path(@battle, winner: @battle.player_b.username)
+      redirect_to game_over_path(@battle, winner: @battle.player_b)
     elsif @cards_opponent.all?(&:dead)
-      redirect_to game_over_path(@battle, winner: @battle.player_a.username)
+      redirect_to game_over_path(@battle, winner: @battle.player_a)
     else
       render :show
     end
@@ -63,9 +63,6 @@ class BattlesController < ApplicationController
 
   def play_card
     battle = Battle.find(params[:id])
-    player_cards = battle.player_a.battle_cards.where(battle: battle).and(battle.player_a.battle_cards.where(dead: false))
-    opponents_cards = battle.player_b.battle_cards.where(battle: battle).and(battle.player_b.battle_cards.where(dead: false))
-    all_cards = player_cards + opponents_cards
     skill_id = params[:skill]
     skill = Skill.find(skill_id)
     attacker = skill.card
@@ -83,14 +80,34 @@ class BattlesController < ApplicationController
   end
 
   def simulate_turn
+    battle = Battle.find(params[:id])
+    players_deck = battle.battle_cards.where(player: current_user.player).and(BattleCard.where(dead: false))
     # 1. Get the skills the card_to_play can use, compute a simple logic to decide which to use
+    card_to_play = BattleCard.find(session[:card_to_play_id])
+    skill = decision_skill(card_to_play)
     # 2. Do the same for the opponent's card to target
+    bc_target = decision_target(players_deck)
+    bc_target.hit_points = bc_target.card.hit_points unless bc_target.hit_points
+    bc_target.save
     # 3. Calculate damage, lower hit_points and reset counter
-    raise
+    calculate_damage(card_to_play, bc_target, skill)
+    card_to_play.counter = 0
+    card_to_play.save
+    session.delete(:card_to_play_id)
     redirect_to battle_path(battle)
   end
 
   private
+
+  def decision_skill(card)
+    # TO DO !!!!!!
+    card.card.skills.sample
+  end
+
+  def decision_target(deck)
+    # TO DO !!!!!!
+    deck.sample
+  end
 
   def calculate_damage(attacker, target, skill)
     damage = attacker.card.power
@@ -102,8 +119,6 @@ class BattlesController < ApplicationController
     target.hit_points -= damage
     target.dead = true if target.hit_points <= 0
     target.save
-    attacker.counter = 0
-    attacker.save
   end
 
   def play_turn(cards_player, cards_opponent)
@@ -123,7 +138,7 @@ class BattlesController < ApplicationController
         battle_card.save
       end
     end
-    all_cards.find { |battle_card| battle_card.counter > 100 }
+    all_cards.find { |battle_card| battle_card.counter >= 100 }
   end
 
   def battle_params
